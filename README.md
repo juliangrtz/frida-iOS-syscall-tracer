@@ -1,6 +1,8 @@
 # frida-iOS-syscall-tracer
 
 An `strace`-like syscall tracer for 64-bit iOS devices based on [Frida's Stalker API](https://frida.re/docs/stalker/). It is not stable yet and often causes the traced process to crash.
+The purpose of this tool is to allow you to backtrace certain anti-(jailbreak|debugging|tampering|reverse engineering) techniques that rely on syscalls.
+Common file system-based syscalls that are used for anti-jailbreak techniques in many banking apps, for example, are `stat` and `open`. These scan the file system for file names such as _Cydia_, _Sileo_, _/etc/apt/sources.list_ etc.
 
 
 # Installation
@@ -49,7 +51,7 @@ mprotect(ptr(0x100d90000), 0x100000, 0x1)
 
 # License
 
-Copyright 2023 expl0itr
+Copyright 2023 Julian Goeritz
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
