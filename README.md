@@ -49,6 +49,12 @@ mprotect(ptr(0x100d90000), 0x100000, 0x1)
 ...
 ```
 
+# Work to be done
+– improve code quality
+– improve stability
+– support newest iOS versions
+– SCRE
+
 # License
 
 Do whatever the f*ck you want with it.
