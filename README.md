@@ -49,14 +49,14 @@ mprotect(ptr(0x100d90000), 0x100000, 0x1)
 ...
 ```
 
-# Work to be done
+# to be done
+– add proper backtracing
+
 – improve code quality
 
 – improve stability
 
 – support newest iOS versions
-
-– SCRE
 
 # License
 
