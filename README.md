@@ -15,12 +15,16 @@ Common file system-based syscalls that are used for anti-jailbreak techniques in
 # Installation
 
 ```
+git clone https://github.com/juliangrtz/frida-iOS-syscall-tracer
+cd frida-iOS-syscall-tracer
 npm run build
 ```
 
 # Usage example
 
 ```
+# Be sure the jailbroken iOS device is connected via USB and everything is set up correctly.
+cd agent
 frida -Uf com.apple.stocks -l _tracer.js 
 ```
 
