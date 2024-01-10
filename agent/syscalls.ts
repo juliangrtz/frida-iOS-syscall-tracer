@@ -83,7 +83,7 @@ export function printSyscall(cpuContext) {
 
 export const SYSCALLS = {
     // Mach syscalls
-    // https://github.com/apple-oss-distributions/xnu/blob/main/osfmk/kern/syscall_sw.c
+    // https://github.com/apple-oss-distributions/xnu/blob/main/osfmk/kern/syscall_sw.c#L105
     "-1": { name: "kern_invalid", signature: "" },
     "-2": { name: "kern_invalid", signature: "" },
     "-3": { name: "kern_invalid", signature: "" },
