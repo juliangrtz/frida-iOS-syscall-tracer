@@ -4,33 +4,32 @@ An `strace`-like syscall tracer for 64-bit iOS devices based on [Frida's Stalker
 The purpose of this tool is to allow you to backtrace certain anti-(jailbreak|debugging|tampering|reverse engineering) techniques that rely on syscalls.
 Common file system-based syscalls that are used for anti-jailbreak techniques in many banking apps, for example, are `stat` and `open`. These scan the file system for file names such as _Cydia_, _Sileo_, _/etc/apt/sources.list_ etc.
 
-# Requirements
-- NPM
+## Requirements
+
+- npm
 - Jailbroken iOS device
 - frida and frida-tools on the remote device
 - frida-server on the iOS device
-- patience
-- brain
 
-# Installation
+## Installation
 
-```
+```bash
 git clone https://github.com/juliangrtz/frida-iOS-syscall-tracer
 cd frida-iOS-syscall-tracer
-npm run build
+npm install
 ```
 
-# Usage example
+## Usage example
 
-```
+```bash
 # Be sure the jailbroken iOS device is connected via USB and everything is set up correctly.
 cd agent
 frida -Uf com.apple.stocks -l _tracer.js 
 ```
 
-# Output example
+## Output example
 
-```
+```text
 [+] Following thread 12295
 ulock_wake()
 proc_info()
@@ -60,7 +59,8 @@ mprotect(ptr(0x100d90000), 0x100000, 0x1)
 ...
 ```
 
-# to be done
+## to be done
+
 – add proper backtracing
 
 – improve code quality
@@ -68,7 +68,3 @@ mprotect(ptr(0x100d90000), 0x100000, 0x1)
 – improve stability
 
 – support newest iOS versions
-
-# License
-
-Do whatever the f*ck you want with it.
