@@ -63,7 +63,7 @@ If that occurs try to downgrade frida, frida-tools and frida-server.
 
 ## To do list
 
-– Ad proper backtracing
+– Add proper backtracing
 
 – Improve code quality
 
