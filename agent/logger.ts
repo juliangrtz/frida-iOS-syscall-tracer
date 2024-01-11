@@ -5,7 +5,7 @@ export const Color = {
     }
 };
 
-export function log(input, color = Color.Gray) {
+export function log(input: object | string, color = Color.Gray) {
     let colorPrefix = '\x1b[3';
     let colorSuffix = 'm';
 
@@ -17,14 +17,14 @@ export function log(input, color = Color.Gray) {
 };
 
 
-export function logInfo(input) {
+export function logInfo(input: object | string) {
     log(input, Color.RESET);
 }
 
-export function logWarning(input) {
+export function logWarning(input: object | string) {
     log(input, Color.Yellow);
 }
 
-export function logError(input) {
+export function logError(input: object | string) {
     log(input, Color.Red);
 }

@@ -1,7 +1,5 @@
 {
   "compilerOptions": {
-    "moduleResolution": "node",
-    "noImplicitAny": false,
     "target": "ESNext",
     "lib": [
       "ESNext"

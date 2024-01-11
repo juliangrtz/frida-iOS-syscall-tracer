@@ -3,7 +3,7 @@ import { printSyscall } from "./syscalls";
 
 var threadsFollowed: { [id: ThreadId]: boolean } = {};
 
-Process.setExceptionHandler(function (exp) {
+Process.setExceptionHandler(function (exp: ExceptionDetails) {
     console.log(`${exp.type} @ ${exp.address}`);
 
     let backtrace = Thread.backtrace(exp.context, Backtracer.FUZZY).map(DebugSymbol.fromAddress);
