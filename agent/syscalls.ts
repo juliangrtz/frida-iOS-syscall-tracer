@@ -92,6 +92,12 @@ export function printSyscall(cpuContext: CpuContext) {
     }
 }
 
+/*
+Read this documentation if you want to learn about specific syscalls:
+https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/
+*/
+
+
 // https://github.com/apple-oss-distributions/xnu/blob/main/osfmk/kern/syscall_sw.c#L105
 export const MACH_SYSCALLS: Record<number, Syscall> = {
     1: { name: "kern_invalid", signature: "" },

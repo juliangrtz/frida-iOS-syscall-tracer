@@ -1,3 +1,5 @@
+// ANSI colors
+// https://telepathy.freedesktop.org/doc/telepathy-glib/telepathy-glib-debug-ansi.html
 export const Color = {
     Reset: "\x1b[0m",
     Black: "\x1b[30m",
