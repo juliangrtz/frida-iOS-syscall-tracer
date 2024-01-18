@@ -22,6 +22,9 @@ npm install
 ## Usage example
 
 ```bash
+# Adjust config to your liking
+nano agent/config.ts
+
 # Be sure the jailbroken iOS device is connected via USB and everything is set up correctly.
 frida -Uf com.apple.stocks -l _tracer.js 
 ```
