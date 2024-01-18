@@ -18,7 +18,6 @@ export function log(input: object | string, color = Color.White) {
     );
 };
 
-
 export function logInfo(input: object | string) {
     log(input, Color.Reset);
 }

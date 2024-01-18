@@ -1,3 +1,4 @@
+import { Config } from "./config";
 import { log } from "./logger";
 import { printSyscall } from "./syscalls";
 
@@ -6,7 +7,7 @@ var threadsFollowed: { [id: ThreadId]: boolean } = {};
 Process.setExceptionHandler(function (exp: ExceptionDetails) {
     console.log(`${exp.type} @ ${exp.address}`);
 
-    let backtrace = Thread.backtrace(exp.context, Backtracer.FUZZY).map(DebugSymbol.fromAddress);
+    let backtrace = Thread.backtrace(exp.context, Config.exceptionBacktracerType).map(DebugSymbol.fromAddress);
     for (let i in backtrace)
         console.log(backtrace[i]);
 

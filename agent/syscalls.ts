@@ -85,7 +85,7 @@ export function printSyscall(cpuContext: CpuContext) {
     log(`${syscall.name}(${formatArguments(syscall, context)})`);
 
     if (Config.verbose) {
-        let backtrace = Thread.backtrace(cpuContext, Backtracer.ACCURATE).map(DebugSymbol.fromAddress);
+        let backtrace = Thread.backtrace(cpuContext, Config.syscallLogBacktracerType).map(DebugSymbol.fromAddress);
 
         for (let i in backtrace)
             console.log(backtrace[i]);
