@@ -1,24 +1,26 @@
 export const Color = {
-    RESET: "\x1b[39;49;00m", Black: "0;01", Blue: "4;01", Cyan: "6;01", Gray: "7;11", Green: "2;01", Purple: "5;01", Red: "1;01", Yellow: "3;01",
-    Light: {
-        Black: "0;11", Blue: "4;11", Cyan: "6;11", Gray: "7;01", Green: "2;11", Purple: "5;11", Red: "1;11", Yellow: "3;11"
-    }
+    Reset: "\x1b[0m",
+    Black: "\x1b[30m",
+    White: "\x1b[37m",
+    Blue: "\x1b[44m",
+    Cyan: "\x1b[36m",
+    Green: "\x1b[32m",
+    Magenta: "\x1b[35m",
+    Red: "\x1b[31m",
+    Yellow: "\x1b[33m",
 };
 
-export function log(input: object | string, color = Color.Gray) {
-    let colorPrefix = '\x1b[3';
-    let colorSuffix = 'm';
-
-    console.log(`${colorPrefix}${color}${colorSuffix}` +
+export function log(input: object | string, color = Color.White) {
+    console.log(color +
         `${typeof input == 'object'
             ? JSON.stringify(input)
-            : input}${Color.RESET}`
+            : input}${Color.Reset}`
     );
 };
 
 
 export function logInfo(input: object | string) {
-    log(input, Color.RESET);
+    log(input, Color.Reset);
 }
 
 export function logWarning(input: object | string) {
