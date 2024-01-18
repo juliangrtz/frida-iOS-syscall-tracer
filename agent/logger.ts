@@ -1,5 +1,5 @@
 // ANSI colors
-// https://telepathy.freedesktop.org/doc/telepathy-glib/telepathy-glib-debug-ansi.html
+// https://stackoverflow.com/questions/9781218/how-to-change-node-jss-console-font-color
 export const Color = {
     Reset: "\x1b[0m",
     Black: "\x1b[30m",

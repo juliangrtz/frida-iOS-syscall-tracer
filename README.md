@@ -7,7 +7,7 @@ Common file system-based syscalls that are used for anti-jailbreak techniques in
 ## Requirements
 
 - npm
-- Jailbroken iOS device
+- jailbroken iOS device
 - frida and frida-tools on the remote device
 - frida-server on the iOS device
 
