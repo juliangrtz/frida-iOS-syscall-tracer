@@ -25,18 +25,33 @@ function followThread(threadId: ThreadId) {
     threadsFollowed[threadId] = true;
     log("[+] Following thread " + threadId);
 
-    Stalker.follow(threadId, {
-        transform(iterator: StalkerArm64Iterator) {
-            let instruction = iterator.next();
+    const cSource = `
+    #include <gum/guminterceptor.h>
+    #include <gum/gumdefs.h>
+    #include <gum/gumstalker.h>
+    #include <string.h>
+    #include <stdio.h>
 
-            do {
-                if (instruction?.mnemonic === "svc") {
-                    iterator.putCallout(printSyscall);
-                }
-                iterator.keep();
-            } while ((instruction = iterator.next()) !== null);
-        },
+    extern void printSyscall(GumCpuContext * ctx, gpointer user_data);
+    
+    void transform(GumStalkerIterator *iterator, GumStalkerOutput *output, gpointer user_data) {
+      cs_insn *instruction;
+    
+      while (gum_stalker_iterator_next(iterator, &instruction)) {
+        if (strcmp(instruction->mnemonic, "svc") == 0) {
+          gum_stalker_iterator_put_callout(iterator, printSyscall, user_data, NULL);
+        }
+    
+        gum_stalker_iterator_keep(iterator);
+      }
+    }
+    `;
+
+    const cModule = new CModule(cSource, {
+        printSyscall: new NativeCallback(printSyscall, 'void', ['pointer', 'pointer'])
     });
+
+    Stalker.follow(threadId, cModule.transform);
 }
 
 function unfollowThread(threadId: ThreadId) {

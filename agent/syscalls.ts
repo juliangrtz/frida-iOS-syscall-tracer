@@ -1,8 +1,3 @@
-/*
-    TODO: Write a script that parses syscall.h files and turns the syscalls into a TypeScript map
-    TODO: Add callback functions to patch syscalls if needed
-*/
-
 import { Config } from "./config";
 import { log, logWarning } from "./logger";
 
@@ -63,13 +58,15 @@ function formatArguments(syscall: Syscall, cpuContext: Arm64CpuContext) {
     return result;
 }
 
-export function printSyscall(cpuContext: CpuContext) {
+export function printSyscall(cpuContext: NativePointerValue, _: NativePointerValue){
+    log(cpuContext);
+
     /*
         https://www.theiphonewiki.com/wiki/Kernel_Syscalls#Note_on_these
         "Args go in their normal registers, like arg1 in R0/X0, as usual.
         Syscall # goes in IP (that's intra-procedural, not instruction pointer!), a.k.a. R12/X16."
     */
-    let context = cpuContext as Arm64CpuContext;
+    let context = cpuContext as unknown as Arm64CpuContext;
     let syscallNumber = context.x16.toInt32();
     let syscall = undefined;
 
@@ -85,7 +82,7 @@ export function printSyscall(cpuContext: CpuContext) {
     log(`${syscall.name}(${formatArguments(syscall, context)})`);
 
     if (Config.verbose) {
-        let backtrace = Thread.backtrace(cpuContext, Config.syscallLogBacktracerType).map(DebugSymbol.fromAddress);
+        let backtrace = Thread.backtrace(context, Config.syscallLogBacktracerType).map(DebugSymbol.fromAddress);
 
         for (let i in backtrace)
             console.log(backtrace[i]);

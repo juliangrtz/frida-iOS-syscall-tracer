@@ -34,7 +34,7 @@ frida -Uf com.apple.stocks -l _tracer.js
 ```text
 $ frida -Uf com.apple.stocks -l _tracer.js
      ____
-    / _  |   Frida 16.1.10 - A world-class dynamic instrumentation toolkit
+    / _  |   Frida 16.1.11 - A world-class dynamic instrumentation toolkit
    | (_| |
     > _  |   Commands:
    /_/ |_|       help      -> Displays the help system
@@ -60,11 +60,15 @@ proc_info(callnum=5, pid=25582, flavor=0x2, arg=0x0, buffer=ptr(0x187c62510), bu
 
 ## Troubleshooting
 
-The script was tested on several iOS versions (13, 14 and 15) but is not guaranteed to work on all iOS versions.
-There is a known issue where Frida is unable to spawn a process: "Failed to spawn: unable to launch iOS app via FBS: The operation couldn’t be completed."
-If that occurs try to downgrade frida, frida-tools and frida-server.
+This tool was tested on several iOS versions (13, 14 and 15) but is not guaranteed to work on all iOS versions.
+There is a known issue where Frida is unable to spawn a process and the following error message is displayed: "Failed to spawn: unable to launch iOS app via FBS: The operation couldn’t be completed."
+If that occurs try to downgrade frida, frida-tools and frida-server. Also try to patch the application's entitlements.
 
-## To do list
+## To do list (descending importance)
+
+– Add callback functions to patch syscall return values if needed
+
+– Write a script that parses syscall.h files and turns the syscalls into a TypeScript map
 
 – Add proper backtracing
 
@@ -72,4 +76,4 @@ If that occurs try to downgrade frida, frida-tools and frida-server.
 
 – Improve stability
 
-– Support newest iOS versions
+– Support the newest iOS versions
