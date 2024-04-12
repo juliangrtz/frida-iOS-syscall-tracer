@@ -12,7 +12,6 @@ void transform(GumStalkerIterator *iterator, GumStalkerOutput *output, gpointer 
     while (gum_stalker_iterator_next(iterator, &instruction))
     {
         if(instruction->id == ARM64_INS_SVC) {
-        {
            gum_stalker_iterator_put_callout(iterator, printSyscall, NULL, NULL);
         }
 
