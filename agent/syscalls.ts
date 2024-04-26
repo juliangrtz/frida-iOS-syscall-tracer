@@ -18,15 +18,21 @@ function formatValueByType(value: NativePointer, type: String) {
         case "int":
         case "size_t":
             return value.toInt32();
+        case "uint":
+            return value.toUInt32();
+        case "long":
+            return value.readLong();
+        case "ulong":
+            return value.readULong();
         case "char*":
             return `"${value.readCString()}"`;
+        case "int*":
+        case "uint*":
         case "void*":
             return `ptr(${value})`;
-        // TODO: Add more types
         default:
             if (Config.verbose)
                 logWarning("Unknown type " + type);
-
             return value;
     }
 }
@@ -259,7 +265,7 @@ export const POSIX_SYSCALLS: Record<number, Syscall> = {
     26: { name: "ptrace", signature: "int ptrace(int req, int pid, void* addr, int data)" },
     27: { name: "recvmsg", signature: "int recvmsg(int s, void* msg, int flags)" },
     28: { name: "sendmsg", signature: "int sendmsg(int s, void* msg, int flags)" },
-    29: { name: "recvfrom", signature: "int recvfrom(int s, void *buf, size_t len, int flags, void* from, void* fromlenaddr)" },
+    29: { name: "recvfrom", signature: "int recvfrom(int s, void* buf, size_t len, int flags, void* from, void* fromlenaddr)" },
     30: { name: "accept", signature: "int accept(int s, void* name, void* anamelen)" },
     31: { name: "getpeername", signature: "int getpeername(int fdes, void* asa, void* alen)" },
     32: { name: "getsockname", signature: "int getsockname(int fdes, void* asa, void* alen)" },
@@ -320,7 +326,7 @@ export const POSIX_SYSCALLS: Record<number, Syscall> = {
     90: { name: "dup2", signature: "int dup2(uint from, uint to)" },
     91: { name: "getdopt", signature: "" },
     92: { name: "fcntl", signature: "int fcntl(int fd, int cmd, long arg)" },
-    93: { name: "select", signature: "int select(int nd, uint *in, uint *ou, uint *ex, void* tv)" },
+    93: { name: "select", signature: "int select(int nd, uint* in, uint* ou, uint* ex, void* tv)" },
     95: { name: "fsync", signature: "int fsync(int fd)" },
     96: { name: "setpriority", signature: "int setpriority(int which, id_t who, int prio)" },
     97: { name: "socket", signature: "int socket(int domain, int type, int protocol)" },
@@ -387,20 +393,20 @@ export const POSIX_SYSCALLS: Record<number, Syscall> = {
     199: { name: "lseek", signature: "int lseek(int fd, int offset, int whence)" },
     200: { name: "truncate", signature: "int truncate(char* path, int length)" },
     201: { name: "ftruncate", signature: "int ftruncate(int fd, int length)" },
-    202: { name: "__sysctl", signature: "int __sysctl(void* name, uint namelen, void *old, void* oldlenp, void *new, size_t newlen)" },
+    202: { name: "__sysctl", signature: "int __sysctl(void* name, uint namelen, void* old, void* oldlenp, void* new, size_t newlen)" },
     203: { name: "mlock", signature: "int mlock(void* addr, size_t len)" },
     204: { name: "munlock", signature: "int munlock(void* addr, size_t len)" },
     205: { name: "undelete", signature: "int undelete(char* path)" },
     216: { name: "mkcomplex", signature: "int mkcomplex(char* path, int mode, ulong type)" },
     220: { name: "getattrlist", signature: "int getattrlist(char* path, void* alist, void* attributeBuffer, size_t bufferSize, ulong options)" },
     221: { name: "setattrlist", signature: "int setattrlist(char* path, void* alist, void* attributeBuffer, size_t bufferSize, ulong options)" },
-    222: { name: "getdirentriesattr", signature: "int getdirentriesattr(int fd, void* alist, void *buffer, size_t buffersize, void* count, void* basep, void* newstate, ulong options)" },
+    222: { name: "getdirentriesattr", signature: "int getdirentriesattr(int fd, void* alist, void* buffer, size_t buffersize, void* count, void* basep, void* newstate, ulong options)" },
     223: { name: "exchangedata", signature: "int exchangedata(char* path1, char* path2, ulong options)" },
-    225: { name: "searchfs", signature: "int searchfs(char* path, void* sblock, uint *nummatches, uint scriptcode, uint options, void* state)" },
+    225: { name: "searchfs", signature: "int searchfs(char* path, void* sblock, uint* nummatches, uint scriptcode, uint options, void* state)" },
     226: { name: "delete", signature: "int delete(char* path)" },
     227: { name: "copyfile", signature: "int copyfile(char* from, char* to, int mode, int flags)" },
-    228: { name: "fgetattrlist", signature: "int fgetattrlist(int fd, attrlist *alist, void *attributeBuffer, size_t bufferSize, ulong options)" },
-    229: { name: "fsetattrlist", signature: "int fsetattrlist(int fd, attrlist *alist, void *attributeBuffer, size_t bufferSize, ulong options)" },
+    228: { name: "fgetattrlist", signature: "int fgetattrlist(int fd, attrlist *alist, void* attributeBuffer, size_t bufferSize, ulong options)" },
+    229: { name: "fsetattrlist", signature: "int fsetattrlist(int fd, attrlist *alist, void* attributeBuffer, size_t bufferSize, ulong options)" },
     230: { name: "poll", signature: "int poll(pollfd *fds, uint nfds, int timeout)" },
     231: { name: "watchevent", signature: "int watchevent(eventreq *u_req, int u_eventmask)" },
     232: { name: "waitevent", signature: "int waitevent(eventreq *u_req, timeval *tv)" },
@@ -414,10 +420,10 @@ export const POSIX_SYSCALLS: Record<number, Syscall> = {
     240: { name: "listxattr", signature: "size_t listxattr(char* path, void* namebuf, size_t bufsize, int options)" },
     241: { name: "flistxattr", signature: "size_t flistxattr(int fd, char* namebuf, size_t size, int options)" },
     242: { name: "fsctl", signature: "int fsctl(char* path, ulong cmd, caddr_t data, uint options)" },
-    243: { name: "initgroups", signature: "int initgroups(uint gidsetsize, int *gidset, int gmuid)" },
-    244: { name: "posix_spawn", signature: "int posix_spawn(int *pid, char* path, _posix_spawn_args_desc *adesc, char* *argv, char* *envp)" },
+    243: { name: "initgroups", signature: "int initgroups(uint gidsetsize, int* gidset, int gmuid)" },
+    244: { name: "posix_spawn", signature: "int posix_spawn(int* pid, char* path, _posix_spawn_args_desc *adesc, char* *argv, char* *envp)" },
     245: { name: "ffsctl", signature: "int ffsctl(int fd, ulong cmd, caddr_t data, uint options)" },
-    250: { name: "minherit", signature: "int minherit(void *addr, size_t len, int inherit)" },
+    250: { name: "minherit", signature: "int minherit(void* addr, size_t len, int inherit)" },
     266: { name: "shm_open", signature: "int shm_open(char* name, int oflag, ...)" },
     267: { name: "shm_unlink", signature: "int shm_unlink(char* name)" },
     268: { name: "sem_open", signature: "sem_t *sem_open(char* name, int oflag, ...)" },
@@ -426,7 +432,7 @@ export const POSIX_SYSCALLS: Record<number, Syscall> = {
     271: { name: "sem_wait", signature: "int sem_wait(sem_t *sem)" },
     272: { name: "sem_trywait", signature: "int sem_trywait(sem_t *sem)" },
     273: { name: "sem_post", signature: "int sem_post(sem_t *sem)" },
-    274: { name: "sem_getvalue", signature: "int sem_getvalue(sem_t *sem, int *sval)" },
+    274: { name: "sem_getvalue", signature: "int sem_getvalue(sem_t *sem, int* sval)" },
     275: { name: "sem_init", signature: "int sem_init(sem_t *sem, int phsared, uint value)" },
     276: { name: "sem_destroy", signature: "int sem_destroy(sem_t *sem)" },
     277: { name: "open_extended", signature: "int open_extended(char* path, int flags, int uid, int gid, int mode, void* xsecurity)" },
@@ -438,15 +444,15 @@ export const POSIX_SYSCALLS: Record<number, Syscall> = {
     283: { name: "fchmod_extended", signature: "int fchmod_extended(int fd, int uid, int gid, int mode, void* xsecurity)" },
     284: { name: "access_extended", signature: "int access_extended(void* entries, size_t size, void* results, int uid)" },
     285: { name: "settid", signature: "int settid(int uid, int gid)" },
-    286: { name: "gettid", signature: "int gettid(int *uidp, int *gidp)" },
+    286: { name: "gettid", signature: "int gettid(int* uidp, int* gidp)" },
     287: { name: "setsgroups", signature: "int setsgroups(int setlen, void* guidset)" },
     288: { name: "getsgroups", signature: "int getsgroups(void* setlen, void* guidset)" },
     289: { name: "setwgroups", signature: "int setwgroups(int setlen, uint guidset)" },
-    290: { name: "getwgroups", signature: "int getwgroups (int *setlen, uint guidset)" },
+    290: { name: "getwgroups", signature: "int getwgroups (int* setlen, uint guidset)" },
     291: { name: "mkfifo_extended", signature: "int mkfifo_extended(char* path, int uid, int gid, int mode, void* xsecurity)" },
     292: { name: "mkdir_extended", signature: "int mkdir_extended(char* path, int uid, int gid, int mode, void* xsecurity)" },
-    294: { name: "shared_region_check_np", signature: "int shared_region_check_np(ulong *startaddress)" },
-    296: { name: "vm_pressure_monitor", signature: "int vm_pressure_monitor (int wait_for_pressure, int nsecs_monitored, uint *pages_reclaimed)" },
+    294: { name: "shared_region_check_np", signature: "int shared_region_check_np(ulong* startaddress)" },
+    296: { name: "vm_pressure_monitor", signature: "int vm_pressure_monitor (int wait_for_pressure, int nsecs_monitored, uint* pages_reclaimed)" },
     297: { name: "psynch_rw_longrdlock", signature: "uint psynch_rw_longrdlock(void* rwlock, uint lgenval, uint ugenval, uint rw_wc, int flags)" },
     298: { name: "psynch_rw_yieldwrlock", signature: "uint psynch_rw_yieldwrlock(void* rwlock, uint lgenval, uint ugenval, uint rw_wc, int flags)" },
     299: { name: "psynch_rw_downgrade", signature: "int psynch_rw_downgrade(void* rwlock, uint lgenval, uint ugenval, uint rw_wc, int flags)" },
@@ -471,7 +477,7 @@ export const POSIX_SYSCALLS: Record<number, Syscall> = {
     318: { name: "aio_read", signature: "int aio_read(aiocb * aiocbp)" },
     319: { name: "aio_write", signature: "int aio_write(void* aiocbp)" },
     320: { name: "lio_listio", signature: "lio_listio(int mode, aiocb *aiocblist[], int nent, sigevent *sigp)" },
-    322: { name: "iopolicysys", signature: "int iopolicysys(int cmd, void *arg)" },
+    322: { name: "iopolicysys", signature: "int iopolicysys(int cmd, void* arg)" },
     323: { name: "process_policy", signature: "int process_policy(int scope, int action, int policy, int policy_subtype, void* attrp, int target_pid, ulong target_threadid)" },
     324: { name: "mlockall", signature: "int mlockall(int how)" },
     325: { name: "munlockall", signature: "int munlockall(int how)" },
@@ -490,13 +496,13 @@ export const POSIX_SYSCALLS: Record<number, Syscall> = {
     341: { name: "stat64_extended", signature: "" },
     342: { name: "lstat64_extended", signature: "" },
     343: { name: "fstat64_extended", signature: "" },
-    344: { name: "getdirentries64", signature: "size_t getdirentries64(int fd, void *buf, user_size_t bufsize, int *position)" },
+    344: { name: "getdirentries64", signature: "size_t getdirentries64(int fd, void* buf, user_size_t bufsize, int* position)" },
     345: { name: "statfs64", signature: "int statfs64(char* path, void* buf)" },
     346: { name: "fstatfs64", signature: "int fstatfs64(int fd, void* buf)" },
     347: { name: "getfsstat64", signature: "int getfsstat64(char* buf, int bufsize, int flags)" },
     348: { name: "__pthread_chdir", signature: "int __pthread_chdir(char* path)" },
     349: { name: "__pthread_fchdir", signature: "int __pthread_fchdir(int fd)" },
-    350: { name: "audit", signature: "int audit(void *record, int length)" },
+    350: { name: "audit", signature: "int audit(void* record, int length)" },
     351: { name: "auditon", signature: "int auditon(int cmd, void* data, int length)" },
     353: { name: "getauid", signature: "int getauid(au_id_t *auid)" },
     354: { name: "setauid", signature: "int setauid(au_id_t *auid)" },
@@ -528,11 +534,11 @@ export const POSIX_SYSCALLS: Record<number, Syscall> = {
     400: { name: "wait4_nocancel", signature: "int wait4_nocancel(int pid, void* status, int options, void* rusage)" },
     401: { name: "recvmsg_nocancel", signature: "int recvmsg_nocancel(int s, msghdr *msg, int flags)" },
     402: { name: "sendmsg_nocancel", signature: "int sendmsg_nocancel(int s, caddr_t msg, int flags)" },
-    403: { name: "recvfrom_nocancel", signature: "int recvfrom_nocancel(int s, void *buf, size_t len, int flags, sockaddr *from, int *fromlenaddr)" },
-    404: { name: "accept_nocancel", signature: "int accept_nocancel(int s, caddr_t name, int *anamelen)" },
+    403: { name: "recvfrom_nocancel", signature: "int recvfrom_nocancel(int s, void* buf, size_t len, int flags, sockaddr *from, int* fromlenaddr)" },
+    404: { name: "accept_nocancel", signature: "int accept_nocancel(int s, caddr_t name, int* anamelen)" },
     405: { name: "msync_nocancel", signature: "int msync_nocancel(caddr_t addr, size_t len, int flags)" },
     406: { name: "fcntl_nocancel", signature: "int fcntl_nocancel(int fd, int cmd, long arg)" },
-    407: { name: "select_nocancel", signature: "int select_nocancel(int nd, uint *in, uint *ou, uint *ex, timeval *tv)" },
+    407: { name: "select_nocancel", signature: "int select_nocancel(int nd, uint* in, uint* ou, uint* ex, timeval *tv)" },
     408: { name: "fsync_nocancel", signature: "int fsync_nocancel(int fd)" },
     409: { name: "connect_nocancel", signature: "int connect_nocancel(int s, caddr_t name, int namelen)" },
     410: { name: "sigsuspend_nocancel", signature: "int sigsuspend_nocancel(sigset_t mask)" },
