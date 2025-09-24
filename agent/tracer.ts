@@ -1,6 +1,6 @@
 import { Config } from "./config";
 import { log } from "./logger";
-import { printSyscall } from "./syscalls";
+import { handleSyscall } from "./syscalls";
 
 var threadsFollowed: { [id: ThreadId]: boolean } = {};
 
@@ -34,7 +34,7 @@ function followThread(threadId: ThreadId) {
                     if (Config.traceInstructions) {
                         log(instruction?.mnemonic + " " + instruction?.opStr)
                     }
-                    iterator.putCallout(printSyscall);
+                    iterator.putCallout(handleSyscall);
                 }
                 iterator.keep();
             } while ((instruction = iterator.next()) !== null);
