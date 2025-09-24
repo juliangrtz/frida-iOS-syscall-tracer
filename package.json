@@ -1,6 +1,6 @@
 {
   "name": "frida-ios-syscall-tracer",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A syscall tracer for 64-bit iOS devices",
   "private": true,
   "main": "agent/tracer.ts",
@@ -10,9 +10,9 @@
     "watch": "frida-compile agent/tracer.ts -o _tracer.js -w"
   },
   "devDependencies": {
-    "@types/frida-gum": "^18.3.1",
-    "@types/node": "^18.15.11",
-    "frida-compile": "^10.2.5"
+    "@types/frida-gum": "^19.0.1",
+    "@types/node": "^18.19.111",
+    "frida-compile": "^19.0.4"
   },
   "dependencies": {}
 }

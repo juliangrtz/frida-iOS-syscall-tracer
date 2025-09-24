@@ -32,7 +32,7 @@ function followThread(threadId: ThreadId) {
             do {
                 if (instruction?.mnemonic === "svc") {
                     iterator.putCallout(printSyscall);
-                } else if(Config.verbose) {
+                } else if (Config.verbose) {
                     log(instruction?.mnemonic + " " + instruction?.opStr)
                 }
                 iterator.keep();
@@ -54,7 +54,8 @@ function unfollowThread(threadId: ThreadId) {
 
 function stalkThreads() {
     followThread(Process.getCurrentThreadId());
-    Interceptor.attach(Module.getExportByName(null, "_pthread_start"), {
+    const libSystem = Process.getModuleByName("libSystem.B.dylib");
+    Interceptor.attach(libSystem.getExportByName("_pthread_start"), {
         onEnter(args) {
             if (isThreadFollowed(this.threadId)) {
                 return;
