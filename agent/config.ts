@@ -12,7 +12,7 @@ export let Config = {
     // Whether to backtrace the origin of each syscall. Might spam the console.
     backtrace: false,
 
-    // Syscall exlusions.
+    // Syscall exclusions.
     excludes: [
         // e.g. "ulock_wait", "ulock_wake"
     ] as string[],

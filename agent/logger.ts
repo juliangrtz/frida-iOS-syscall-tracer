@@ -9,6 +9,7 @@ export const Color = {
     Green: "\x1b[32m",
     Magenta: "\x1b[35m",
     Red: "\x1b[31m",
+    RedBackground: "\x1b[41m",
     Yellow: "\x1b[33m",
 };
 
@@ -34,6 +35,10 @@ export function logBacktrace(input: object | string) {
 
 export function logWarning(input: object | string) {
     log(input, Color.Yellow);
+}
+
+export function logCallback(input: object | string) {
+    log(input, Color.RedBackground)
 }
 
 export function logError(input: object | string) {

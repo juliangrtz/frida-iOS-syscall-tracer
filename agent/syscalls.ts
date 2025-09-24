@@ -4,7 +4,7 @@ import { log, logBacktrace, logWarning } from "./logger";
 class Syscall {
     name!: string;
     signature?: string;
-    onCall?: () => void;
+    onCall?: (ctx: Arm64CpuContext) => void;
 }
 
 const functionSignatureRegex = /^([\w\s*]+)\s+(\w+)\s*\(([\w\s*,*]+)\)$/;
@@ -98,7 +98,7 @@ export function handleSyscall(cpuContext: CpuContext) {
         return;
     }
 
-    syscall.onCall?.();
+    syscall.onCall?.(context);
 
     log(`${Config.verbose ? context.pc : ""} [${syscallNumber}] ${syscall.name}(${formatArguments(syscall, context)})`);
 
@@ -272,7 +272,7 @@ export const POSIX_SYSCALLS: Record<number, Syscall> = {
     23: { name: "setuid", signature: "int setuid(int uid)" },
     24: { name: "getuid", signature: "int getuid()" },
     25: { name: "geteuid", signature: "int geteuid()" },
-    26: { name: "ptrace", signature: "int ptrace(int req, int pid, void* addr, int data)" },
+    26: { name: "ptrace", signature: "int ptrace(int req, int pid, void* addr, int data)", /*onCall: handlePtrace*/ },
     27: { name: "recvmsg", signature: "int recvmsg(int s, void* msg, int flags)" },
     28: { name: "sendmsg", signature: "int sendmsg(int s, void* msg, int flags)" },
     29: { name: "recvfrom", signature: "int recvfrom(int s, void* buf, size_t len, int flags, void* from, void* fromlenaddr)" },
@@ -499,7 +499,7 @@ export const POSIX_SYSCALLS: Record<number, Syscall> = {
     332: { name: "__pthread_markcancel", signature: "int __pthread_markcancel(int thread_port)" },
     333: { name: "__pthread_canceled", signature: "int __pthread_canceled(int action)" },
     334: { name: "__semwait_signal", signature: "int __semwait_signal(int cond_sem, int mutex_sem, int timeout, int relative, int64_t tv_sec, int32_t tv_nsec)" },
-    336: { name: "proc_info", signature: "int proc_info(int callnum, int pid, uint flavor, long arg, void* buffer, int buffersize)" },
+    336: { name: "proc_info", signature: "int proc_info(int callnum, int pid, uint flavor, long arg, void* buffer, int buffersize)"/*, onCall: handleProcinfo */ },
     338: { name: "stat64", signature: "int stat64(char* path, void* buf)" },
     339: { name: "fstat64", signature: "int fstat64(int fildes, void* buf)" },
     340: { name: "lstat64", signature: "int lstat64(char* path, void* buf)" },

@@ -1,6 +1,6 @@
 {
   "name": "frida-ios-syscall-tracer",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "A syscall tracer for 64-bit iOS devices",
   "private": true,
   "main": "agent/tracer.ts",
