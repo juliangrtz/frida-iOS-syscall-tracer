@@ -16,6 +16,7 @@ Common file system-based syscalls that are used for anti-jailbreak techniques in
   - (optional: backtrace)
   - (optional: bytes of `SVC` instruction)
   - etc.
+- callbacks for syscalls to defeat anti-RE measures
 - configurable
 
 ## Requirements
