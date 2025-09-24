@@ -1,7 +1,3 @@
-/*
-    TODO: Write a script that parses syscall.h files and turns the syscalls into a TypeScript map
-*/
-
 import { Config } from "./config";
 import { log, logWarning } from "./logger";
 
@@ -678,5 +674,7 @@ export const POSIX_SYSCALLS: Record<number, Syscall> = {
     553: { name: "mkfifoat" },
     554: { name: "mknodat" },
     555: { name: "ungraftdmg" },
-    556: { name: "MAXSYSCALL" }
+    556: { name: "coalition_policy_set" },
+    557: { name: "coalition_policy_get" },
+    558: { name: "MAXSYSCALL" }
 }
