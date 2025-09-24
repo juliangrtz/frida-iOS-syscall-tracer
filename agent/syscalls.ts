@@ -102,17 +102,13 @@ export function handleSyscall(cpuContext: CpuContext) {
         return;
     }
 
-    if (syscall.onCall != null) {
-        syscall.onCall();
-    }
+    syscall.onCall?.();
 
     log(`${Config.verbose ? context.pc : ""} [${syscallNumber}] ${syscall.name}(${formatArguments(syscall, context)})`);
 
     if (Config.backtrace) {
         let backtrace = Thread.backtrace(cpuContext, Config.syscallLogBacktracerType).map(DebugSymbol.fromAddress);
-
-        for (let i in backtrace)
-            console.log(backtrace[i]);
+        log(backtrace.join(" <> "));
     }
 }
 
