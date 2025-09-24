@@ -24,6 +24,14 @@ export function logInfo(input: object | string) {
     log(input, Color.Reset);
 }
 
+export function logInstr(input: object | string) {
+    log(input, Color.Cyan);
+}
+
+export function logBacktrace(input: object | string) {
+    log(input, Color.Green);
+}
+
 export function logWarning(input: object | string) {
     log(input, Color.Yellow);
 }

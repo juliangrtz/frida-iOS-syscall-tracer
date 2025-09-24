@@ -1,5 +1,5 @@
 import { Config } from "./config";
-import { log, logWarning } from "./logger";
+import { log, logBacktrace, logWarning } from "./logger";
 
 class Syscall {
     name!: string;
@@ -104,7 +104,7 @@ export function handleSyscall(cpuContext: CpuContext) {
 
     if (Config.backtrace) {
         let backtrace = Thread.backtrace(cpuContext, Config.syscallLogBacktracerType).map(DebugSymbol.fromAddress);
-        log(backtrace.join(" <> "));
+        logBacktrace(backtrace.join(" <> "));
     }
 }
 

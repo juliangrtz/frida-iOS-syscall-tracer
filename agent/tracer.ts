@@ -1,6 +1,7 @@
 import { Config } from "./config";
-import { log } from "./logger";
+import { log, logInstr } from "./logger";
 import { handleSyscall } from "./syscalls";
+import { bufToHexStr } from "./utils";
 
 var threadsFollowed: { [id: ThreadId]: boolean } = {};
 
@@ -32,7 +33,8 @@ function followThread(threadId: ThreadId) {
             do {
                 if (instruction?.mnemonic === "svc") {
                     if (Config.traceInstructions) {
-                        log(instruction?.mnemonic + " " + instruction?.opStr)
+                        var buf = instruction.address.readByteArray(4); // svc is always 4 bytes
+                        logInstr(`${instruction?.mnemonic} ${instruction?.opStr} ${buf != null ? `(hex: ${bufToHexStr(buf)})` : ""}`);
                     }
                     iterator.putCallout(handleSyscall);
                 }
