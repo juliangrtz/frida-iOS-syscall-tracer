@@ -31,9 +31,10 @@ function followThread(threadId: ThreadId) {
 
             do {
                 if (instruction?.mnemonic === "svc") {
+                    if (Config.traceInstructions) {
+                        log(instruction?.mnemonic + " " + instruction?.opStr)
+                    }
                     iterator.putCallout(printSyscall);
-                } else if (Config.verbose) {
-                    log(instruction?.mnemonic + " " + instruction?.opStr)
                 }
                 iterator.keep();
             } while ((instruction = iterator.next()) !== null);

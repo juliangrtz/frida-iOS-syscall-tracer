@@ -7,33 +7,41 @@ import { Config } from "./config";
 import { log, logWarning } from "./logger";
 
 type Syscall = {
-    name: String;
-    signature: String;
+    name: string;
+    signature: string;
 }
 
 const functionSignatureRegex = /^([\w\s*]+)\s+(\w+)\s*\(([\w\s*,*]+)\)$/;
 
 function formatValueByType(value: NativePointer, type: String) {
-    switch (type) {
-        case "int":
-        case "size_t":
-            return value.toInt32();
-        case "uint":
-            return value.toUInt32();
-        case "long":
-            return value.readLong();
-        case "ulong":
-            return value.readULong();
-        case "char*":
-            return `"${value.readCString()}"`;
-        case "int*":
-        case "uint*":
-        case "void*":
-            return `ptr(${value})`;
-        default:
-            if (Config.verbose)
-                logWarning("Unknown type " + type);
-            return value;
+    if (value.isNull()) {
+        return "NULL";
+    }
+
+    try {
+        switch (type) {
+            case "int":
+            case "size_t":
+                return value.toInt32();
+            case "uint":
+                return value.toUInt32();
+            case "long":
+                return value.readLong();
+            case "ulong":
+                return value.readULong();
+            case "char*":
+                return `"${value.readCString()}"`;
+            case "int*":
+            case "uint*":
+            case "void*":
+                return `ptr(${value})`;
+            default:
+                if (Config.verbose)
+                    logWarning("Unknown type " + type);
+                return value;
+        }
+    } catch (e) {
+        logWarning(`Couldn't read memory (${e})`)
     }
 }
 
@@ -88,7 +96,11 @@ export function printSyscall(cpuContext: CpuContext) {
         syscall = POSIX_SYSCALLS[syscallNumber] ?? "Unknown syscall";
     }
 
-    log(`${syscall.name}(${formatArguments(syscall, context)})`);
+    if (Config.excludes.includes(syscall.name) || Config.excludes.includes(syscallNumber.toString())) {
+        return;
+    }
+
+    log(`${Config.verbose ? context.pc : ""} ${syscall.name}(${formatArguments(syscall, context)})`);
 
     if (Config.verbose) {
         let backtrace = Thread.backtrace(cpuContext, Config.syscallLogBacktracerType).map(DebugSymbol.fromAddress);

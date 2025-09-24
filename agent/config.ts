@@ -1,7 +1,10 @@
- export let Config = {
+export let Config = {
     syscallLogBacktracerType: Backtracer.ACCURATE,
     exceptionBacktracerType: Backtracer.FUZZY,
-    // useCModule: true, TO BE DONE
-    logMachSyscalls: false,
-    verbose: false
+    logMachSyscalls: true,
+    traceInstructions: false,
+    verbose: true,
+    excludes: [
+        "ulock_wait", "ulock_wake"
+    ] as string[]
 }

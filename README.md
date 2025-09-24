@@ -32,9 +32,9 @@ frida -Uf com.apple.stocks -l _tracer.js
 ## Output example
 
 ```text
-$ frida -Uf com.apple.stocks -l _tracer.js
+$ frida -Uf com.heavily.protected.app -l _tracer.js
      ____
-    / _  |   Frida 16.1.10 - A world-class dynamic instrumentation toolkit
+    / _  |   Frida 17.3.2 - A world-class dynamic instrumentation toolkit
    | (_| |
     > _  |   Commands:
    /_/ |_|       help      -> Displays the help system
@@ -44,17 +44,13 @@ $ frida -Uf com.apple.stocks -l _tracer.js
    . . . .   More info at https://frida.re/docs/home/
    . . . .
    . . . .   Connected to Apple iPad (id=yadayadayada)
-Spawning `com.apple.stocks`...
-[+] Following thread 5635
-Spawned `com.apple.stocks`. Resuming main thread!
-[Apple iPad::com.apple.stocks ]-> [+] Following thread 12039
-ulock_wake(p=ptr(0x1000002), args=ptr(0x101568a00), retval=ptr(0x0))
-ulock_wake(p=ptr(0x1000002), args=ptr(0x10155d400), retval=ptr(0x0))
-ulock_wake(p=ptr(0x1000002), args=ptr(0x10155d400), retval=ptr(0x0))
-ulock_wake(p=ptr(0x1000002), args=ptr(0x10155d400), retval=ptr(0x0))
-ulock_wake(p=ptr(0x1000002), args=ptr(0x10155d400), retval=ptr(0x0))
-ulock_wake(p=ptr(0x1000002), args=ptr(0x1f6f74778), retval=ptr(0x0))
-proc_info(callnum=5, pid=25582, flavor=0x2, arg=0x0, buffer=ptr(0x187c62510), buffersize=33)
+Spawning `com.heavily.protected.app`...
+[+] Following thread 4099
+Spawned `com.heavily.protected.app`. Resuming main thread!
+[+] Following thread 10499
+0x1ba77a2d0 proc_info(callnum=5, pid=89979, flavor=2, arg=NULL, buffer=ptr(0x170166f90), buffersize=15)
+[+] Following thread 8963
+Process terminated
 ...
 ```
 
