@@ -1,8 +1,9 @@
 import { Config } from "./config";
 import { log, logInstr } from "./logger";
-import { handleSyscall } from "./syscalls";
+import { handleSyscallAfterExecution, handleSyscallBeforeExecution } from "./syscalls";
 import { bufToHexStr } from "./utils";
 
+const SVC_MNEMONIC = "svc";
 var threadsFollowed: { [id: ThreadId]: boolean } = {};
 
 Process.setExceptionHandler(function (exp: ExceptionDetails) {
@@ -31,12 +32,13 @@ function followThread(threadId: ThreadId) {
             let instruction = iterator.next();
 
             do {
-                if (instruction?.mnemonic === "svc") {
+                if (instruction?.mnemonic === SVC_MNEMONIC) {
                     if (Config.traceInstructions) {
                         var buf = instruction.address.readByteArray(4); // svc is always 4 bytes
                         logInstr(`${instruction?.mnemonic} ${instruction?.opStr} ${buf != null ? `(hex: ${bufToHexStr(buf)})` : ""}`);
                     }
-                    iterator.putCallout(handleSyscall);
+                    iterator.putCallout(handleSyscallBeforeExecution);
+                    iterator.putCallout(handleSyscallAfterExecution);
                 }
                 iterator.keep();
             } while ((instruction = iterator.next()) !== null);
