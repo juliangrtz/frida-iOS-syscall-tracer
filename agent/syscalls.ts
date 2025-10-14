@@ -1,4 +1,4 @@
-import { handleGetppidAfter, handlePtraceBefore } from "./callbacks";
+import { handlePtrace } from "./callbacks";
 import { Config } from "./config";
 import { log, logBacktrace, logWarning } from "./logger";
 
@@ -6,8 +6,7 @@ class Syscall {
     name!: string;
     retval_type?: string;
     args?: Record<string, string>;
-    beforeCall?: (ctx: Arm64CpuContext) => void;
-    afterCall?: (ctx: Arm64CpuContext) => void;
+    onCall?: (ctx: Arm64CpuContext) => void;
 }
 
 function formatValueByType(value: NativePointer, type: String) {
@@ -30,16 +29,23 @@ function formatValueByType(value: NativePointer, type: String) {
                 return value.readULong();
             case "char*":
                 return `"${value.readCString()}"`;
+            case "int*":
+            case "uint*":
+            case "void*":
+                return `ptr(${value})`;
             default:
+                logWarning(`Unknown type ${type}. Assuming pointer type.`);
                 return `ptr(${value})`;
         }
-    } catch (e) { }
+    } catch (e) {
+        logWarning(`Couldn't read memory at ${value.toString()}: (${e})`)
+    }
 }
 
-function formatRetval(x0: NativePointer, syscall: Syscall) {
+// TODO Read retval after syscall is done
+function formatRetval(syscall: Syscall) {
     if (!syscall.retval_type) return "";
-    // return ` -> ${formatValueByType(x0, syscall.retval_type)}`;
-    return ` -> ${x0.toString()}`;
+    return ` -> ${syscall.retval_type}`;
 }
 
 function formatArguments(syscall: Syscall, cpuContext: Arm64CpuContext) {
@@ -53,56 +59,35 @@ function formatArguments(syscall: Syscall, cpuContext: Arm64CpuContext) {
         .join(", ");
 }
 
-let syscallInfo = new Map<ThreadId, { syscall: Syscall; number: number }>();
+export function handleSyscall(cpuContext: CpuContext) {
+    let context = cpuContext as Arm64CpuContext;
+    let syscallNumber = context.x16.toInt32();
+    let syscall;
 
-export function handleSyscallBeforeExecution(cpuContext: CpuContext) {
-    const context = cpuContext as Arm64CpuContext;
-    const threadId = Process.getCurrentThreadId();
-    const number = context.x16.toInt32();
-
-    let syscall: Syscall | undefined;
-    if (number < 0) {
-        if (!Config.logMachSyscalls) return;
-        syscall = MACH_SYSCALLS[-number] ?? { name: "Unknown syscall" };
+    if (syscallNumber < 0) {
+        if (!Config.logMachSyscalls) {
+            return;
+        }
+        syscall = MACH_SYSCALLS[-syscallNumber] ?? "Unknown syscall";
     } else {
-        syscall = POSIX_SYSCALLS[number] ?? { name: "Unknown syscall" };
+        syscall = POSIX_SYSCALLS[syscallNumber] ?? "Unknown syscall";
     }
 
-    if (!syscall ||
+    if (syscall == null ||
         Config.excludes.includes(syscall.name) ||
-        Config.excludes.includes(number.toString())) {
+        Config.excludes.includes(syscallNumber.toString())) {
         return;
     }
 
-    syscallInfo.set(threadId, { syscall, number });
+    syscall.onCall?.(context);
 
-    if (Config.callCallbacks) syscall.beforeCall?.(context);
+    log(`${Config.verbose ? context.pc : ""} [${syscallNumber}] ${syscall.name}(${formatArguments(syscall, context)})${formatRetval(syscall)}`);
 
     if (Config.backtrace) {
-        const backtrace = Thread.backtrace(cpuContext, Config.syscallLogBacktracerType)
-            .map(DebugSymbol.fromAddress);
+        let backtrace = Thread.backtrace(cpuContext, Config.syscallLogBacktracerType).map(DebugSymbol.fromAddress);
         logBacktrace(backtrace.join(" <> "));
     }
 }
-
-export function handleSyscallAfterExecution(cpuContext: CpuContext) {
-    const context = cpuContext as Arm64CpuContext;
-    const threadId = Process.getCurrentThreadId();
-    const info = syscallInfo.get(threadId);
-    if (!info) return;
-
-    const { syscall, number } = info;
-
-    if (Config.callCallbacks) syscall.afterCall?.(context);
-
-    const argsStr = formatArguments(syscall, context);
-    const retvalStr = formatRetval(context.x0, syscall);
-
-    log(`${Config.verbose ? context.pc + " " : ""}[${number}] ${syscall.name}(${argsStr})${retvalStr}`);
-
-    syscallInfo.delete(threadId);
-}
-
 
 /*
 Read this documentation if you want to learn about specific syscalls:
@@ -408,7 +393,7 @@ export const POSIX_SYSCALLS: Record<number, Syscall> = {
             "addr": "void*",
             "data": "int"
         },
-        beforeCall: handlePtraceBefore
+        onCall: handlePtrace
     },
     27: {
         "name": "recvmsg",
@@ -509,8 +494,7 @@ export const POSIX_SYSCALLS: Record<number, Syscall> = {
     },
     39: {
         "name": "getppid",
-        "retval_type": "int",
-        afterCall: handleGetppidAfter
+        "retval_type": "int"
     },
     40: {
         "name": "lstat"
