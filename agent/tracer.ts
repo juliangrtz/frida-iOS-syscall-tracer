@@ -1,6 +1,6 @@
 import { Config } from "./config";
 import { log, logInstr } from "./logger";
-import { handleSyscall } from "./syscalls";
+import { handleSyscallAfterExecution, handleSyscallBeforeExecution } from "./syscalls";
 import { bufToHexStr } from "./utils";
 
 var threadsFollowed: { [id: ThreadId]: boolean } = {};
@@ -24,7 +24,7 @@ function followThread(threadId: ThreadId) {
         return;
 
     threadsFollowed[threadId] = true;
-    log("[+] Following thread " + threadId);
+    log("[+] Scanning thread " + threadId);
 
     Stalker.follow(threadId, {
         transform(iterator: StalkerArm64Iterator) {
@@ -33,10 +33,14 @@ function followThread(threadId: ThreadId) {
             do {
                 if (instruction?.mnemonic === "svc") {
                     if (Config.traceInstructions) {
-                        var buf = instruction.address.readByteArray(4); // svc is always 4 bytes
+                        var buf = instruction.address.readByteArray(4);
                         logInstr(`${instruction?.mnemonic} ${instruction?.opStr} ${buf != null ? `(hex: ${bufToHexStr(buf)})` : ""}`);
                     }
-                    iterator.putCallout(handleSyscall);
+
+                    iterator.putCallout(handleSyscallBeforeExecution);
+                    iterator.keep();
+                    iterator.next();
+                    iterator.putCallout(handleSyscallAfterExecution);
                 }
                 iterator.keep();
             } while ((instruction = iterator.next()) !== null);
@@ -51,8 +55,8 @@ function unfollowThread(threadId: ThreadId) {
     delete threadsFollowed[threadId];
     log("[+] Unfollowing thread " + threadId);
 
-    Stalker.unfollow(threadId);
-    Stalker.garbageCollect();
+    // Stalker.unfollow(threadId);
+    // Stalker.garbageCollect();
 }
 
 function stalkThreads() {

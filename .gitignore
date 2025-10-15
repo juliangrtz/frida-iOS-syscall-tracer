@@ -6,3 +6,4 @@ npm-debug.log*
 _tracer.js
 node_modules
 signatures
+tmp/

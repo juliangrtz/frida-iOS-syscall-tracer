@@ -12,6 +12,9 @@ export let Config = {
     // Whether to backtrace the origin of each syscall. Might spam the console.
     backtrace: false,
 
+    // Whether to call syscall callbacks defined in callbacks.ts.
+    callCallbacks: false,
+
     // Syscall exclusions.
     excludes: [
         // e.g. "ulock_wait", "ulock_wake"
