@@ -13,7 +13,7 @@ Common file system-based syscalls that are used for anti-jailbreak techniques in
   - address
   - syscall number
   - syscall name
-  - return value
+  - (wip: return value)
   - (optional: backtrace)
   - (optional: bytes of `SVC` instruction)
   - etc.
@@ -48,14 +48,11 @@ export let Config = {
     // Whether to log negative Mach syscalls. Might spam the console.
     logMachSyscalls: false,
 
-    // Whether to trace on instruction level. Might spam the console.
-    traceInstructions: false,
+    // Whether to log SVC instructions and their corresponding byte representations. Might spam the console.
+    logSvcInstructions: false,
 
     // Whether to backtrace the origin of each syscall. Might spam the console.
     backtrace: false,
-
-    // Whether to call syscall callbacks defined in callbacks.ts.
-    callCallbacks: false,
 
     // Syscall exclusions.
     excludes: [
@@ -75,6 +72,12 @@ frida -Uf com.apple.stocks -l _tracer.js
 ```
 
 ## Output example
+
+The tracer outputs syscalls in the following format:
+
+```plain
+{Address in memory} ({Module name}!{Module address}) [{Thread ID}] {Syscall name}({Arguments})
+```
 
 ```text
 $ frida -Uf com.heavily.protected.app -l _tracer.js
