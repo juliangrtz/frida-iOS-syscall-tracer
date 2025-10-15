@@ -89,16 +89,18 @@ $ frida -Uf com.heavily.protected.app -l _tracer.js
    . . . .   More info at https://frida.re/docs/home/
    . . . .
    . . . .   Connected to Apple iPad
-Spawning `com.heavily.protected.app`...
-[+] Following thread 6147
-0x1ba77a148 [372] thread_selfid() -> 0x16ff9b000
-[+] Following thread 9735
-0x1ba7796fc [516] ulock_wake(p=ptr(0x1000002), args=ptr(0x10900e200), retval=NULL) -> 0x1000002
-0x10a7a6570 [516] ulock_wake(p=ptr(0x1000002), args=ptr(0x10900e200), retval=NULL) -> 0x1000002
-0x108dddca4 [26] ptrace(req=31, pid=NULL, addr=NULL, data=NULL) -> 0x1f
-0x10a7a94f0 [26] ptrace(req=31, pid=NULL, addr=NULL, data=NULL) -> 0x1f
-0x108dddcb4 [338] stat64(path="/usr/sbin/frida-server", buf=ptr(0x16ff9aee0)) -> 0x108fb1310
-0x10a7a95a0 [338] stat64(path="/usr/sbin/frida-server", buf=ptr(0x16ff9aee0)) -> 0x108fb1310
+[+] Following thread 9991
+[+] Following thread 6403
+0x1ba779aec (libsystem_kernel.dylib!0x1aec) [6403] psynch_mutexwait(mutex=ptr(0x1f35b13e0), mgen=514, ugen=NULL, tid=undefined, flags=8352)}
+0x1ba77a084 (libsystem_kernel.dylib!0x2084) [9991] psynch_mutexdrop(mutex=ptr(0x1f35b13e0), mgen=512, ugen=256, tid=NULL, flags=12448)}
+0x1ba779480 (libsystem_kernel.dylib!0x1480) [6403] psynch_cvwait(cv=ptr(0x1f35b13b0), cvlsgen=undefined, cvugen=NULL, mutex=ptr(0x1f35b13e0), mugen=undefined, flags=4256, sec=NULL, nsec=NULL)}
+0x1ba77ad30 (libsystem_kernel.dylib!0x2d30) [9991] psynch_cvbroad(cv=ptr(0x1f35b13b0), cvlsgen=undefined, cvudgen=undefined, flags=NULL, mutex=NULL, mugen=NULL, tid=NULL)}
+0x1ba778fcc (libsystem_kernel.dylib!0xfcc) [9991] __semwait_signal(cond_sem=5123, mutex_sem=NULL, timeout=1, relative=1, tv_sec=NULL, tv_nsec=NULL)}
+Detected ptrace(PT_DENY_ATTACH) -- neutralizing before syscall!
+0x109739ca4 (rasp!0x29ca4) [9991] ptrace(req=-1, pid=NULL, addr=NULL, data=NULL)}
+0x109739cb4 (rasp!0x29cb4) [9991] stat64(path="/usr/sbin/frida-server", buf=ptr(0x16f652ee0))}
+0x109739cf8 (rasp!0x29cf8) [9991] getppid()}
+0x1ba77d004 (libsystem_kernel.dylib!0x5004) [9991] bsdthread_create(func=ptr(0x109739e60), func_arg=ptr(0x2802bc6c0), stack=ptr(0x16fbcb000), pthread=ptr(0x16fbcb000), flags=150997247)}
 ...
 ```
 
