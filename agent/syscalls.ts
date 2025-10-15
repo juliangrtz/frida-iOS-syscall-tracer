@@ -42,12 +42,6 @@ function formatValueByType(value: NativePointer, type: String) {
     }
 }
 
-// TODO Read retval after syscall is done
-function formatRetval(syscall: Syscall) {
-    if (!syscall.retval_type) return "";
-    return ` -> ${syscall.retval_type}`;
-}
-
 function formatArguments(syscall: Syscall, cpuContext: Arm64CpuContext) {
     if (!syscall.args) return "";
 
@@ -81,7 +75,17 @@ export function handleSyscall(cpuContext: CpuContext) {
 
     syscall.onCall?.(context);
 
-    log(`${Config.verbose ? context.pc : ""} [${syscallNumber}] ${syscall.name}(${formatArguments(syscall, context)})${formatRetval(syscall)}`);
+
+    let addresses = `${context.pc}`;
+    let module = Process.findModuleByAddress(context.pc);
+
+    if (module) {
+        let addressInModule = context.pc.sub(module.base);
+        addresses += ` (${module.name}!${addressInModule})`;
+    }
+
+    let tid = Process.getCurrentThreadId();
+    log(`${addresses} [${tid}] ${syscall.name}(${formatArguments(syscall, context)})}`);
 
     if (Config.backtrace) {
         let backtrace = Thread.backtrace(cpuContext, Config.syscallLogBacktracerType).map(DebugSymbol.fromAddress);

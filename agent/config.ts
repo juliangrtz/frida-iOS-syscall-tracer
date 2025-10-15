@@ -6,8 +6,8 @@ export let Config = {
     // Whether to log negative Mach syscalls. Might spam the console.
     logMachSyscalls: false,
 
-    // Whether to trace on instruction level. Might spam the console.
-    traceInstructions: false,
+    // Whether to log SVC instructions and their corresponding byte representations. Might spam the console.
+    logSvcInstructions: false,
 
     // Whether to backtrace the origin of each syscall. Might spam the console.
     backtrace: false,

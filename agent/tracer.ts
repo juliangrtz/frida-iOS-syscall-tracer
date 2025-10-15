@@ -32,8 +32,8 @@ function followThread(threadId: ThreadId) {
 
             do {
                 if (instruction?.mnemonic === "svc") {
-                    if (Config.traceInstructions) {
-                        var buf = instruction.address.readByteArray(4); // svc is always 4 bytes
+                    if (Config.logSvcInstructions) {
+                        var buf = instruction.address.readByteArray(4);
                         logInstr(`${instruction?.mnemonic} ${instruction?.opStr} ${buf != null ? `(hex: ${bufToHexStr(buf)})` : ""}`);
                     }
                     iterator.putCallout(handleSyscall);
@@ -76,4 +76,6 @@ function stalkThreads() {
     });
 }
 
+log("[+] frida-iOS-syscall-tracer starting...");
+log(`[+] Attached to process ${Process.id}.`);
 stalkThreads();
